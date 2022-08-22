@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react"
 import {
+    Alert,
     FlatList,
-    ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
@@ -15,27 +16,54 @@ type ParticipantType = {
 }
 
 const Home = () => {
-    const participants: ParticipantType[] = [
-        { id: "0", name: "Higão" },
-        { id: "1", name: "Vini" },
-        { id: "2", name: "Diego" },
-        { id: "3", name: "Biro" },
-        { id: "4", name: "Biro" },
-        { id: "5", name: "Biro" },
-        { id: "6", name: "Biro" },
-        { id: "7", name: "Biro" },
-        { id: "8", name: "Biro" },
-        { id: "9", name: "Biro" },
-        { id: "10", name: "Biro" },
-    ]
+    const [participants, setParticipants] = useState<ParticipantType[]>([])
+    const [participantName, setParticipantName] = useState("")
+
+    const allParticipants = () => {
+        setParticipants([{ id: "0", name: "Higor" }])
+    }
 
     const handleParticipantAdd = () => {
-        console.log("Clique no button Add")
+        participants.forEach((participant) => {
+            if (participant.name.includes(participantName)) {
+                return Alert.alert(
+                    "Participante existe",
+                    "Já existe um participante na lista com esse nome."
+                )
+            }
+        })
+
+        setParticipants((prevState) => [
+            ...prevState,
+            { id: `${prevState.length + 1}`, name: participantName },
+        ])
+
+        setParticipantName("")
     }
 
     const handleParticipantRemove = (name: string) => {
-        console.log("Remove", name)
+        Alert.alert("Remover", `Remover o participante ${name}?`, [
+            {
+                text: "Sim",
+                onPress: () => {
+                    setParticipants((prevState) =>
+                        prevState.filter(
+                            (participant) => participant.name !== name
+                        )
+                    )
+                },
+            },
+
+            {
+                text: "Não",
+                style: "cancel",
+            },
+        ])
     }
+
+    useEffect(() => {
+        allParticipants()
+    }, [])
 
     return (
         <View style={styles.container}>
@@ -47,6 +75,8 @@ const Home = () => {
                     style={styles.input}
                     placeholder="Nome do participante"
                     placeholderTextColor="#000123"
+                    value={participantName}
+                    onChangeText={setParticipantName}
                 />
 
                 <TouchableOpacity
